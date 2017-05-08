@@ -1,22 +1,10 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-chai.use(chaiHttp);
+const connect = require('../lib/connect');
 
-// Set up mongoDB
-const dbURI = 'mongodb://localhost:27017/testDB';
-const mongoose = require('mongoose');
-mongoose.Promise = Promise;
-mongoose.connect(dbURI);
-const connection = mongoose.connection;
+let connection = null;
 
-before( done => {
-  const drop = () => connection.db.dropDatabase(done);
-  if (connection.readyState === 1) drop();
-  else connection.on( 'open', drop );
+before(() => {
+  return connect('mongodb://localhost:27017/devfolio-test')
+  .then(cn => connection = cn);
 });
 
-after( done => {
-  const drop = () => connection.db.dropDatabase(done);
-  if (connection.readyState === 1) drop();
-  else connection.on( 'open', drop );
-});
+after(() => connection.close());

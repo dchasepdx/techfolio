@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "pretest": "eslint .",
-    "test": "MONGODB_URI=mongodb://localhost/gallery-test mocha"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
