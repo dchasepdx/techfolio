@@ -6,12 +6,11 @@ chai.use(chaiHttp);
 
 const app = require('../lib/app');
 const request = chai.request(app);
+const db = require('./db');
 
-
-describe('User authentication routes', () => {
-
-  let adminToken = null;
-  const admin = {
+describe.only('User authentication routes', () => {
+  let adminToken = '';
+  let admin = {
     email: 'admin@email.com',
     password: 'Password',
     firstName: 'Ad',
@@ -19,66 +18,61 @@ describe('User authentication routes', () => {
     roles: ['admin']
   };
 
-  let token = null;
-  const tokenUser = {
+  let token = '';
+  let tokenUser = {
     email: 'unauth@email.com',
     password: 'Password',
     firstName: 'First',
     lastName: 'Last'
   };
 
-  before(done => {
+  before(db.drop);
+
+  before(() => {
     // Set up a tokened user for later tests
-    request
+    return request
       .post('/auth/signup')
       .send(tokenUser)
-      .end((err, res) => {
-        if (err) done(err);
-        let response = JSON.parse(res.text);
-        assert.isOk(token = response.token);
-        done();
+      .then(res => res.body)
+      .then(response => {
+        assert.isOk(response.token);
+        token = response.token;
       });
   });
 
-  before(done => {
+  before(() => {
     // Set up a admin for later tests
-    request
+    return request
       .post('/auth/signup')
       .send(admin)
-      .end((err, res) => {
-        if (err) done(err);
-        let response = JSON.parse(res.text);
-        assert.isOk(adminToken = response.token);
-        done();
+      .then(res => res.body)
+      .then(response => {
+        assert.isOk(response.token);
+        adminToken = response.token;
       });
   });
 
   /***************  ADMIN TESTS ***************************/
 
-  it('requires admin access to hit the /admin route', done => {
-
-    request
+  it('requires admin access to hit the /admin route', () => {
+    return request
       .get('/admin')
       .set('Authorization', adminToken)
       .then(res => {
-        assert.isAbove(res.text.length, 0); // admin should get an array of all users back
-        done();
+        console.log(res.body);
+        assert.isAbove(res.body.length, 0); // admin should get an array of all users back
       })
-      .catch(done);
-
+      .catch();
   });
 
-  it('errors if you hit the /admin route as a normal user', done => {
-
-    request
-      .get('/admin')
+  it('errors if you hit the /admin route as a normal user', () => {
+    return request.get('/admin')
       .set('Authorization', token)
-      .catch(err => {
-        assert.equal(err.status, 401);
-        assert.equal(err.response.text, '{"error":"Unauthorized."}');
-        done();
-      });
-
+      .then(
+        () => { throw new Error('response should not be 200');},
+      res => {
+        assert.equal(res.status, 401);
+      }
+    );
   });
-
 });
