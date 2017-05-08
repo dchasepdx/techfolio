@@ -1,4 +1,3 @@
-// Set up testing env
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const assert = chai.assert;
@@ -8,7 +7,7 @@ const app = require('../lib/app');
 const request = chai.request(app);
 const db = require('./db');
 
-describe.only('User authentication routes', () => {
+describe('User authentication routes', () => {
   let adminToken = '';
   let admin = {
     email: 'admin@email.com',
@@ -59,7 +58,6 @@ describe.only('User authentication routes', () => {
       .get('/admin')
       .set('Authorization', adminToken)
       .then(res => {
-        console.log(res.body);
         assert.isAbove(res.body.length, 0); // admin should get an array of all users back
       })
       .catch();

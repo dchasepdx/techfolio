@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
+
 const github = require('./routes/oauth/github-oauth');
 const linkedin = require('./routes/oauth/linkedin-oauth');
 const user = require('./routes/user-router');
@@ -10,6 +12,7 @@ const errorHandler = require('./error-handler');
 const app = express();
 
 app.use(morgan('dev'));
+app.use(bodyParser.json());
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {

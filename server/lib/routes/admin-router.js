@@ -1,12 +1,11 @@
 const router = require('express').Router();
-const bodyParser = require('body-parser').json();
 
 const User = require('../models/user');
 const ensureToken = require('../auth/ensure-token')();
 const ensureAdmin = require('../auth/ensure-admin')();
 
 router
-  .get('/', bodyParser, ensureToken, ensureAdmin, (req, res, next) => {
+  .get('/', ensureToken, ensureAdmin, (req, res, next) => {
     User.find({})
       .then(users => res.send(users))
       .catch(next);

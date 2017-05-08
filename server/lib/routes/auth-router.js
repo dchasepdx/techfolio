@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const bodyParser = require('body-parser').json();
 const User = require('../models/user');
 const PersonalInfo = require('../models/personal-info');
 const token = require('../auth/token');
@@ -24,7 +23,7 @@ router
     res.send({ valid: true });
   })
 
-  .post('/signup', bodyParser, ensureLogin, (req, res, next) => {
+  .post('/signup', ensureLogin, (req, res, next) => {
 
     const { email, password } = req.body;
     delete req.body.password;
@@ -49,7 +48,7 @@ router
     .catch(next);
   })
 
-  .post('/signin', bodyParser, (req, res, next) => {
+  .post('/signin', (req, res, next) => {
     const { email, password } = req.body;
     delete req.body.password;
     User.findOne({ email })
@@ -66,7 +65,7 @@ router
       .catch(next);
   })
 
-  .post('/personal', ensureToken, bodyParser, (req, res, next) => {
+  .post('/personal', ensureToken, (req, res, next) => {
     User.findById(req.user.id)
       .then(user => {
         if(user.personalInfo) {

@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 require('dotenv').load({ silent: true });
 require('./lib/connect');
 
