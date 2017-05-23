@@ -1,30 +1,17 @@
 const router = require('express').Router();
-const bodyParser = require('body-parser').json();
 const User = require('../models/user');
-const PersonalInfo = require('../models/personal-info');
 const token = require('../auth/token');
 const ensureLogin = require('../auth/ensure-login')();
-const ensureToken = require('../auth/ensure-token')();
 
 
 router
-  .get('/', ensureToken, (req, res, next) => {
-    User.findById(req.user.id)
-      .select('-ghaccess -liAccess -_id -password')
-      .populate({ path: 'github' })
-      .populate({ path: 'linkedIn' })
-      .lean()
-      .then(user => {
-        res.send(user);
-      })
-      .catch(next);
-  })
+
 
   .post('/validate', (req, res, next) => {  // eslint-disable-line no-unused-vars
     res.send({ valid: true });
   })
 
-  .post('/signup', bodyParser, ensureLogin, (req, res, next) => {
+  .post('/signup', ensureLogin, (req, res, next) => {
 
     const { email, password } = req.body;
     delete req.body.password;
@@ -49,7 +36,7 @@ router
     .catch(next);
   })
 
-  .post('/signin', bodyParser, (req, res, next) => {
+  .post('/signin', (req, res, next) => {
     const { email, password } = req.body;
     delete req.body.password;
     User.findOne({ email })
@@ -64,27 +51,6 @@ router
       })
       .then(token => res.send({ token }))
       .catch(next);
-  })
-
-  .post('/personal', ensureToken, bodyParser, (req, res, next) => {
-    User.findById(req.user.id)
-      .then(user => {
-        if(user.personalInfo) {
-          PersonalInfo.findByIdAndUpdate(user.personalInfo, req.body)
-            .then(() => res.send(user));
-        } else {
-          new PersonalInfo(req.body)
-            .save()
-            .then(profile => {
-              user.personalInfo = profile._id;
-              return user.save();
-            })
-            .then(user => {
-              res.send(user);
-            });
-        }
-      })
-      .catch(err => next(err));
   });
 
 module.exports = router; 

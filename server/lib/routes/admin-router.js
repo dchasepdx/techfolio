@@ -1,4 +1,5 @@
 const router = require('express').Router();
+
 const User = require('../models/user');
 const ensureToken = require('../auth/ensure-token')();
 const ensureAdmin = require('../auth/ensure-admin')();

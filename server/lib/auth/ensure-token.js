@@ -12,9 +12,8 @@ module.exports = function getEnsureAuth() {
         req.user = payload;
         next();
       })
-      .catch(error => {
+      .catch(() => {
         // If an error, returns custom error message
-        console.error('Token error: ', error);
         return next({
           code: 403,
           error:'Sign In Error: Please log in again.'

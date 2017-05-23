@@ -2,7 +2,6 @@ const router = require('express').Router();
 const request = require('request');
 const User = require('../../models/user');
 const LinkedIn = require('../../models/linkedin');
-const bodyParser = require('body-parser').json();
 const token = require('../../auth/token');
 const ensureToken = require('../../auth/ensure-token')();
 
@@ -69,7 +68,7 @@ router
       .catch(error => next(error));
   })
 
-  .post('/', bodyParser, function(req, res) {
+  .post('/', function(req, res) {
     var accessTokenUrl = 'https://www.linkedin.com/oauth/v2/accessToken';
     var params = {
       code: req.body.code,
@@ -101,7 +100,7 @@ router
     });
   })
 
-  .post('/userupdate', ensureToken, bodyParser, (req, res, next) => {
+  .post('/userupdate', ensureToken, (req, res, next) => {
     User.findById(req.user.id)
       .then(user => {
         if(user.linkedIn) {

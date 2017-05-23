@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
+const PersonalInfo = require('./personal-info');
 
 const userSchema = new Schema({
 
@@ -24,10 +25,8 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'LinkedIn'
   },
-  personalInfo: {
-    type: Schema.Types.ObjectId,
-    ref: 'PersonalInfo'
-  },
+  personalInfo: PersonalInfo.schema,
+
   roles: []
 
 });

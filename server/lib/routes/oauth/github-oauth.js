@@ -3,7 +3,6 @@ const request = require('request');
 const qs = require('qs');
 const User = require('../../models/user');
 const Github = require('../../models/github');
-const bodyParser = require('body-parser').json();
 const ensureToken = require('../../auth/ensure-token')();
 const token = require('../../auth/token');
 
@@ -54,7 +53,7 @@ router
       .catch(err => next(err));
   })
 
-  .post('/repos', ensureToken, bodyParser, (req, res, next) => {
+  .post('/repos', ensureToken, (req, res, next) => {
     User.findById(req.user.id)
       .then(user => {
         if(user.github) {
@@ -75,7 +74,7 @@ router
       .catch(err => next(err));
   })
 
-  .post('/', bodyParser, function(req, res, next) {
+  .post('/', function(req, res, next) {
     var accessTokenUrl = 'https://github.com/login/oauth/access_token';
     var params = {
       code: req.body.code,
