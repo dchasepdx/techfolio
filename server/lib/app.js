@@ -16,7 +16,6 @@ app.use(bodyParser.json());
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
-    console.log('Header', req.headers['x-forwarded-proto']);
     // if they request with https don't do anything special
     if (req.headers['x-forwarded-proto'] === 'https') next();  //aka res.headers
     // if just http, redirect to https

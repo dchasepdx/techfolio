@@ -10,7 +10,6 @@ const userHelpers = require('./helpers/userConsts');
 const request = chai.request(app);
 
 describe('User authentication routes', () => {
-  let token = null;
 
 
   before(db.drop);
@@ -22,8 +21,8 @@ describe('User authentication routes', () => {
       .then(res => res.body)
       .then(response => {
         assert.isOk(response.token);
-        token = response.token;
-        assert.isOk(token);
+        userHelpers.tokenUser.token = response.token;
+        assert.isOk(userHelpers.tokenUser.token);
       });
   });
 
@@ -100,53 +99,10 @@ describe('User authentication routes', () => {
 
       return request
         .post('/auth/validate')
-        .set('Authorization', token)
+        .set('Authorization', userHelpers.tokenUser.token)
         .then(res => {
           assert.deepEqual(res.body, {valid:true});
         });
     });
-
-    it('requires a token to hit the /auth route', () => {
-
-      return request
-        .get('/auth')
-        .set('Authorization', token)
-        .then(res => res.body)
-        .then(user => {
-          assert.equal(user.email, userHelpers.tokenUser.email);
-          assert.equal(user.firstName, userHelpers.tokenUser.firstName);
-          assert.equal(user.lastName, userHelpers.tokenUser.lastName);
-          assert.deepEqual(user.roles, []); // roles wasn't added to original token user
-        });
-    });
-
-    it('errors if you hit / without a token', () => {
-
-      return request
-        .get('/auth')
-        .then(
-          userHelpers.expectedError,
-          err => {
-            assert.equal(err.status, 403);
-            assert.deepEqual(err.response.body, userHelpers.signInError);
-          }
-        );
-    });
-
-    it('errors if you hit / with an incorrect token', () => {
-
-      return request
-        .get('/auth')
-        .set('Authorization', 'Not a token')
-        .then(res => res.body)
-        .then(
-          userHelpers.expectedError,
-          err => {
-            assert.equal(err.status, 403);
-            assert.deepEqual(err.response.body, userHelpers.signInError);
-          }
-        );
-    });
-
   });
 });

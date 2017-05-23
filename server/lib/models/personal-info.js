@@ -14,6 +14,7 @@ const personinfo = new Schema({
   skills: [String],
   twitter: String,
   facebook: String,
+  _id: false
 });
 
 module.exports = mongoose.model('PersonalInfo', personinfo);
